@@ -1,0 +1,43 @@
+{
+  "name": "express-api-creator",
+  "version": "0.0.1",
+  "description": "Scaffold an Express.js boilerplate project. You can generate express.js boilerplate code with a single command.",
+  "main": "index.js",
+  "bin": {
+    "express-api-creator": "./bin/setup.js"
+  },
+  "scripts": {
+    "start": "node server",
+    "test": "node bin/setup create",
+    "dev": "node --watch structure/server",
+    "test-js": "node --watch templates/express-js/server"
+  },
+  "keywords": [
+    "cli",
+    "node",
+    "dotenv",
+    "express",
+    "mongodb",
+    "mongoose",
+    "scaffold",
+    "generator",
+    "javascript",
+    "typescript",
+    "boilerplate",
+    "dotenv-expand"
+  ],
+  "author": "Hari Narayan",
+  "license": "MIT",
+  "dependencies": {
+    "console-log-colors": "^0.5.0",
+    "dotenv": "^16.5.0",
+    "dotenv-expand": "^12.0.2",
+    "express": "^5.1.0",
+    "inquirer": "^12.5.2",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
+    "mongoose": "^8.13.2",
+    "mongoose-paginate-v2": "^1.9.0",
+    "nodemailer": "^6.10.1"
+  }
+}

@@ -1,0 +1,7 @@
+const { default: mongoose } = require("mongoose");
+
+const schema = new mongoose.Schema(_schema);
+
+const Name_ = mongoose.model("Name_", schema);
+
+module.exports = Name_;

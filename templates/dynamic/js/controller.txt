@@ -1,0 +1,64 @@
+const Name_ = require("../models/name_");
+
+exports.list = async (req, res) => {
+  try {
+    const data = await Name_.find();
+    res.status(200).json({ message: "success", status: 200, data });
+  } catch (error) {
+    res.status(400).json({ message: "Error", status: 400, error });
+  }
+};
+
+exports.create = async (req, res) => {
+  try {
+    const data = await new Name_(req.body).save();
+    res.status(200).json({ message: "success", status: 200, data });
+  } catch (error) {
+    res.status(400).json({ message: "Error", status: 400, error });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const { id = "" } = req.params;
+
+    if (!id) res.status(400).json({ message: "Error", status: 400 });
+
+    const data = await Name_.findByIdAndUpdate(id, req.body, { new: true });
+    res.status(200).json({ message: "success", status: 200, data });
+  } catch (error) {
+    res.status(400).json({ message: "Error", status: 400, error });
+  }
+};
+
+exports.softDelete = async (req, res) => {
+  try {
+    const { id = "" } = req.params;
+
+    if (!id) res.status(400).json({ message: "Error", status: 400 });
+
+    const data = await Name_.findByIdAndUpdate(
+      id,
+      { deletedAt: Date.now() },
+      { new: true }
+    );
+    res.status(200).json({ message: "success", status: 200, data });
+  } catch (error) {
+    res.status(400).json({ message: "Error", status: 400, error });
+  }
+};
+
+exports.details = async (req, res) => {
+  try {
+    const { id = "" } = req.params;
+
+    if (!id) res.status(400).json({ message: "Error", status: 400 });
+
+    let data = await Name_.findById(id);
+
+    if (data) res.status(200).json({ message: "success", status: 200, data });
+    else res.status(404).json({ message: "Not Found!", status: 404, data });
+  } catch (error) {
+    res.status(400).json({ message: "Error", status: 400, error });
+  }
+};

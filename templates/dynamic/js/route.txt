@@ -1,0 +1,17 @@
+const name_Router = require("express").Router();
+
+const {
+  list,
+  create,
+  update,
+  details,
+  softDelete,
+} = require("../controllers/name_Controller");
+
+name_Router.get("/list", list);
+name_Router.post("/create", create);
+name_Router.get("/detail/:id", details);
+name_Router.post("/update/:id", update);
+name_Router.delete("/delete/:id", softDelete);
+
+module.exports = name_Router;
