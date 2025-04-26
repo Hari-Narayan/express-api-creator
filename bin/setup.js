@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-const path = require("path");
-// const { execSync } = require("child_process");
+import inquirer from "inquirer";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
-const { createDynamicFiles } = require("./module-creator");
-const { PROJECT_NAME, CREATE, CREATE_MCR } = require("./constant");
-const {
-  copyStructure,
+import { createDynamicFiles } from "./module-creator.js";
+import { PROJECT_NAME, CREATE, CREATE_MCR } from "./constant.js";
+import createProject, {
   createEnvFile,
   installDependencies,
-} = require("./project-creator");
+} from "./project-creator.js";
 
 /**
  * Main function to run generators and create files
@@ -22,16 +22,14 @@ const {
   let templateName = "JS";
   let args = process.argv;
   let destinationPath = process.cwd();
-  let basePath = path.basename(destinationPath);
-  let templatePath = path.join(__dirname, "../templates/express-js");
+  let basePath = destinationPath.split("\\").pop() || "";
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  let templatePath = join(__dirname, "../templates/express-js");
 
   args.forEach((arg) => {
     if (["template=ts", "template=typescript"].includes(arg.toLowerCase())) {
       templateName = "TS";
-      templatePath = path.join(__dirname, "../templates/express-ts");
-    } else if (arg.toLowerCase().startsWith("name=")) {
-      projectName = arg.split("=")[1];
-      destinationPath = path.join(destinationPath, projectName);
+      templatePath = join(__dirname, "../templates/express-ts");
     } else if (arg.toUpperCase() === CREATE) {
       commandType = CREATE;
     } else if (arg.toLowerCase().startsWith("mcr=")) {
@@ -44,9 +42,40 @@ const {
 
   if (moduleName && !commandType) commandType = CREATE_MCR;
 
-  if (basePath === PROJECT_NAME && !projectName) {
+  if (commandType === CREATE) {
+    const { userProjectName } = await inquirer.prompt([
+      {
+        default: "",
+        type: "input",
+        name: "userProjectName",
+        message: "What is your project name? (leave empty for default)",
+        validate: (input) => {
+          if (input.trim() === "") return true;
+
+          if (input.length < 3)
+            return "Project name must be at least 3 characters long.";
+
+          if (!/^[a-zA-Z0-9-_]+$/.test(input))
+            return "Project name can only contain letters, numbers, dashes, and underscores.";
+
+          return true;
+        },
+      },
+    ]);
+
+    if (userProjectName) {
+      projectName = userProjectName;
+      destinationPath = join(destinationPath, projectName);
+    } else {
+      projectName = PROJECT_NAME;
+      destinationPath = join(destinationPath, "structure");
+    }
+  } else if (basePath !== PROJECT_NAME && !projectName) {
+    projectName = basePath;
+    destinationPath = join(destinationPath, projectName);
+  } else if (basePath === PROJECT_NAME && !projectName) {
     projectName = PROJECT_NAME;
-    destinationPath = path.join(destinationPath, "structure");
+    destinationPath = join(destinationPath, "structure");
   }
 
   /**
@@ -65,7 +94,7 @@ const {
 
   try {
     if (commandType === CREATE) {
-      await copyStructure(templatePath, destinationPath, projectName);
+      createProject(templatePath, destinationPath);
 
       if (moduleName) await createDynamicFiles(moduleName, fields, projectName);
 

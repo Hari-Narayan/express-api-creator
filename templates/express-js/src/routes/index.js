@@ -1,11 +1,15 @@
-const rootRouter = require("express").Router();
+import { Router } from "express";
 
-const authRouter = require("./authRoute");
+const rootRouter = Router();
 
 rootRouter.get("/", (req, res) => {
   res.send("You are on base API route!");
 });
 
+import authRouter from "./authRoute.js";
 rootRouter.use("/auth", authRouter);
 
-module.exports = rootRouter;
+import userRouter from "./userRoute.js";
+rootRouter.use("/user", userRouter);
+
+export default rootRouter;

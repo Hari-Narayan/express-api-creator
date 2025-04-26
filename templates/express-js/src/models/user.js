@@ -1,11 +1,6 @@
-const { default: mongoose } = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2");
+import mongoose from "mongoose";
 
-const {
-  setJson,
-  createFileURL,
-  encryptPassword,
-} = require("../utils/modelHelper");
+import { setJson, encryptPassword } from "../helpers/modelHelper.js";
 
 const schema = new mongoose.Schema(
   {
@@ -17,11 +12,6 @@ const schema = new mongoose.Schema(
       required: false,
       set: encryptPassword,
     },
-    profileImage: {
-      type: String,
-      required: false,
-      get: (value) => createFileURL(value, "users"),
-    },
   },
   {
     toJSON: setJson,
@@ -29,8 +19,8 @@ const schema = new mongoose.Schema(
     versionKey: false,
     virtuals: { token: { type: String } },
   }
-).plugin(mongoosePaginate);
+);
 
 const User = mongoose.model("User", schema);
 
-module.exports = User;
+export default User;

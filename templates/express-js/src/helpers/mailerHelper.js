@@ -1,6 +1,6 @@
-const nodemailer = require("nodemailer");
+import { createTransport } from "nodemailer";
 
-const transporter = nodemailer.createTransport({
+const transporter = createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
   secure: false, // true for port 465, false for other ports
@@ -20,10 +20,9 @@ async function mailer({ to, subject = "", text = "", html = "" }) {
 
   if (html) mailOptions.html = html;
   if (text) mailOptions.text = text;
+
   // list of receivers
   if (Array.isArray(to)) mailOptions.to = to.join(", ");
-
-  console.log({ mailOptions });
 
   try {
     // send mail with defined transport object
@@ -34,4 +33,4 @@ async function mailer({ to, subject = "", text = "", html = "" }) {
   }
 }
 
-module.exports = mailer;
+export default mailer;

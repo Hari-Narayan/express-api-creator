@@ -1,21 +1,35 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
-const { default: inquirer } = require("inquirer");
-const moment = require("moment");
+import moment from "moment";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { execSync } from "child_process";
+import { default as inquirer } from "inquirer";
+import {
+  mkdirSync,
+  lstatSync,
+  existsSync,
+  readdirSync,
+  readFileSync,
+  copyFileSync,
+  writeFileSync,
+  statSync,
+} from "fs";
+
+import { PROJECT_NAME } from "./constant.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
  * ### Install Dependencies
  * @description Function to check if a folder exists and create it if it doesn't
  * @param {string} folderPath - The path of the folder to check/create
  */
-exports.installDependencies = (lastFolder) => {
-  const packageJsonPath = path.join(process.cwd(), "package.json");
-  const currPackageJsonPath = path.join(__dirname, "../package.json");
+export function installDependencies(projectName) {
+  const packageJsonPath = join(process.cwd(), "package.json");
+  const currPackageJsonPath = join(__dirname, "../package.json");
 
-  if (!fs.existsSync(packageJsonPath)) {
+  if (!existsSync(packageJsonPath)) {
     console.log(
       "package.json not found. Initializing a new Node.js project..."
     );
@@ -23,10 +37,8 @@ exports.installDependencies = (lastFolder) => {
   }
 
   // Read package.json
-  let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-  let currPackageJson = JSON.parse(
-    fs.readFileSync(currPackageJsonPath, "utf-8")
-  );
+  let packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+  let currPackageJson = JSON.parse(readFileSync(currPackageJsonPath, "utf-8"));
 
   let currDependencies = currPackageJson.dependencies;
   const exceptDependencies = ["inquirer"];
@@ -44,11 +56,11 @@ exports.installDependencies = (lastFolder) => {
     dev: "node --watch server",
   };
 
-  if (lastFolder === "express-api-creator")
+  if ([PROJECT_NAME, "structure"].includes(projectName))
     packageJson.scripts.dev = "node --watch structure/server";
 
   // Write updated package.json
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   // Install missing dependencies
   console.log(`Installing dependencies: ${requiredDependencies.join(", ")}`);
@@ -57,7 +69,7 @@ exports.installDependencies = (lastFolder) => {
   });
 
   console.log("✅ Dependencies installed & scripts added to package.json");
-};
+}
 
 /**
  * ### Copy Structure
@@ -65,22 +77,21 @@ exports.installDependencies = (lastFolder) => {
  * @param {*} source
  * @param {*} destination
  */
-exports.copyStructure = async (source, destination, projectName = "") => {
+const copyStructure = async (source, destination, projectName = "") => {
   try {
-    if (!fs.existsSync(destination))
-      fs.mkdirSync(destination, { recursive: true });
+    if (!existsSync(destination)) mkdirSync(destination, { recursive: true });
 
-    const items = fs.readdirSync(source);
+    const items = readdirSync(source);
 
     for (const item of items) {
-      const sourcePath = path.join(source, item);
-      const destPath = path.join(destination, item);
-      const isDirectory = fs.lstatSync(sourcePath).isDirectory();
+      const sourcePath = join(source, item);
+      const destPath = join(destination, item);
+      const isDirectory = lstatSync(sourcePath).isDirectory();
 
       if (isDirectory) {
         await this.copyStructure(sourcePath, destPath); // Recursive for subdirectories
       } else {
-        if (fs.existsSync(destPath)) {
+        if (existsSync(destPath)) {
           const { overwrite } = await inquirer.prompt([
             {
               type: "confirm",
@@ -97,21 +108,34 @@ exports.copyStructure = async (source, destination, projectName = "") => {
         }
 
         if (sourcePath.includes("README.md") && projectName) {
-          let data = fs.readFileSync(sourcePath, "utf-8");
+          let data = readFileSync(sourcePath, "utf-8");
           data = `## Copied on ${moment().format(
             "DD MMM, YYYY HH:mm:ss A"
           )}\n\n# ${projectName}\n\n${data}`;
 
-          fs.writeFileSync(destPath, data, "utf-8");
+          writeFileSync(destPath, data, "utf-8");
           console.log(`Copied and updated "${item}"`);
         } else {
-          fs.copyFileSync(sourcePath, destPath);
+          copyFileSync(sourcePath, destPath);
           console.log(`Copied "${item}"`);
         }
       }
     }
   } catch (error) {
     console.error("Error copying structure:", error);
+  }
+};
+
+const copyDir = (src, dest) => {
+  mkdirSync(dest, { recursive: true });
+  for (const item of readdirSync(src)) {
+    const srcPath = join(src, item);
+    const destPath = join(dest, item);
+    if (statSync(srcPath).isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else {
+      copyFileSync(srcPath, destPath);
+    }
   }
 };
 
@@ -122,10 +146,10 @@ exports.copyStructure = async (source, destination, projectName = "") => {
  * @param {*} projectName
  * @returns
  */
-exports.createEnvFile = async (destination, projectName) => {
-  let envPath = path.join(destination, ".env");
+export async function createEnvFile(destination, projectName) {
+  let envPath = join(destination, ".env");
 
-  if (fs.existsSync(envPath)) {
+  if (existsSync(envPath)) {
     const { overwrite } = await inquirer.prompt([
       {
         default: false,
@@ -141,13 +165,21 @@ exports.createEnvFile = async (destination, projectName) => {
   } else {
     updateEnvFile(envPath, projectName);
   }
-};
+}
 
 const updateEnvFile = (envPath, projectName) => {
-  const currentEnvPath = path.join(__dirname, "../.env.example");
-  let currentEnvContent = fs.readFileSync(currentEnvPath, "utf-8");
+  const currentEnvPath = join(__dirname, "../.env.example");
+  let currentEnvContent = readFileSync(currentEnvPath, "utf-8");
   currentEnvContent = currentEnvContent.replace("express-app", projectName);
 
-  fs.writeFileSync(envPath, currentEnvContent, { encoding: "utf8" });
+  writeFileSync(envPath, currentEnvContent, { encoding: "utf8" });
   console.log("ENV file updated!");
 };
+
+const createProject = (templatePath, destinationPath) => {
+  console.log("Copying structure...");
+  copyDir(templatePath, destinationPath);
+  console.log(`Project created at ${destinationPath}`);
+};
+
+export default createProject;

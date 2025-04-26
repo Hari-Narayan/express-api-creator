@@ -1,12 +1,13 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+import jwt from "jsonwebtoken";
+
+import User from "../models/user.js";
 
 const auth = async (req, res, next) => {
   let token = req.headers.authorization || "";
   token = token ? token.replace("Bearer ", "") : "";
 
   try {
-    const data = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const data = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ email: data.email });
     req.user = user;
 
@@ -22,4 +23,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+export default auth;
