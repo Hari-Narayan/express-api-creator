@@ -26,7 +26,7 @@ export async function createDynamicFiles(requestedCrud, fields, projectName) {
 
     // Fetching route data & update
     let sampleRoute = readFileSync(dynamicRoutePath, "utf-8");
-    sampleRoute = sampleRoute.replaceAll("name_", requestedCrud);
+    sampleRoute = sampleRoute.replaceAll("_name_", requestedCrud);
     let routePath = join(destinationPath, `${structure}/src/routes`);
 
     if (!existsSync(routePath)) {
@@ -44,8 +44,8 @@ export async function createDynamicFiles(requestedCrud, fields, projectName) {
     // Fetching Controller data & update
     let sampleController = readFileSync(dynamicControllerPath, "utf-8");
     sampleController = sampleController
-      .replaceAll("name_", requestedCrud)
-      .replaceAll("Name_", requestedCrudTitleCase);
+      .replaceAll("_name_", requestedCrud)
+      .replaceAll("_Name_", requestedCrudTitleCase);
     let controllerPath = join(
       destinationPath,
       `${structure}/src/controllers/${requestedCrud}Controller.js`
@@ -72,12 +72,13 @@ export async function createDynamicFiles(requestedCrud, fields, projectName) {
     }
 
     let sampleModel = readFileSync(dynamicModelPath, "utf-8");
-    sampleModel = sampleModel
-      .replaceAll("name_", requestedCrud)
-      .replaceAll("Name_", requestedCrudTitleCase)
-      .replaceAll("_schema", schema);
 
-    let modelPath = join(
+    sampleModel = sampleModel
+      .replaceAll("_name_", requestedCrud)
+      .replaceAll("_Name_", requestedCrudTitleCase)
+      .replaceAll("_schema_", schema);
+
+    const modelPath = join(
       destinationPath,
       `${structure}/src/models/${requestedCrud}.js`
     );
@@ -93,23 +94,17 @@ export async function createDynamicFiles(requestedCrud, fields, projectName) {
     try {
       let data = readFileSync(rootRoutePath, "utf-8");
 
-      const insertBefore = `\nmodule.exports = rootRouter;`;
-      // const requireInsert = `const authRouter = require("./authRoute");`;
-      const fileUse = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Router);`;
-      const fileRequire = `const ${requestedCrud}Router = require("./${requestedCrud}Route");`;
+      const insertBefore = `export default rootRouter;`;
+
+      const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.js";`;
+      const fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
 
       // Insert Router require
       if (!data.includes(fileRequire))
         data = data.replace(
           insertBefore,
-          `\n${fileRequire}\n${fileUse}\n${insertBefore}`
+          `\n${importFile}\n${fileRequire}\n\n${insertBefore}`
         );
-
-      // const useInsert = `rootRouter.use("/auth", authRouter);`;
-
-      // Insert Router.use
-      // if (!data.includes(fileUse))
-      //   data = data.replace(useInsert, `${useInsert}\n${fileUse}`);
 
       writeFileSync(rootRoutePath, data, "utf-8");
       console.log("File updated successfully!");

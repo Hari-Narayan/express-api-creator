@@ -1,7 +1,7 @@
-const { default: mongoose } = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const schema = new mongoose.Schema(_schema);
+const schema = new Schema(_schema_);
 
-const Name_ = mongoose.model("Name_", schema);
+const _Name_ = model("_Name_", schema);
 
-module.exports = Name_;
+export default _Name_;

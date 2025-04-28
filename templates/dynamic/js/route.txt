@@ -1,17 +1,13 @@
-const name_Router = require("express").Router();
+import { Router } from "express";
 
-const {
-  list,
-  create,
-  update,
-  details,
-  softDelete,
-} = require("../controllers/name_Controller");
+import { list, create, update, details, softDelete } from "../controllers/_name_Controller.js";
 
-name_Router.get("/list", list);
-name_Router.post("/create", create);
-name_Router.get("/detail/:id", details);
-name_Router.post("/update/:id", update);
-name_Router.delete("/delete/:id", softDelete);
+const _name_Router = Router();
 
-module.exports = name_Router;
+_name_Router.get("/list", list);
+_name_Router.post("/create", create);
+_name_Router.get("/detail/:id", details);
+_name_Router.post("/update/:id", update);
+_name_Router.delete("/delete/:id", softDelete);
+
+export default _name_Router;

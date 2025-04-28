@@ -1,43 +1,43 @@
-const Name_ = require("../models/name_");
+import _Name_ from "../models/_name_.js";
 
-exports.list = async (req, res) => {
+export async function list(req, res) {
   try {
-    const data = await Name_.find();
+    const data = await _Name_.find();
     res.status(200).json({ message: "success", status: 200, data });
   } catch (error) {
     res.status(400).json({ message: "Error", status: 400, error });
   }
-};
+}
 
-exports.create = async (req, res) => {
+export async function create(req, res) {
   try {
-    const data = await new Name_(req.body).save();
+    const data = await new _Name_(req.body).save();
     res.status(200).json({ message: "success", status: 200, data });
   } catch (error) {
     res.status(400).json({ message: "Error", status: 400, error });
   }
-};
+}
 
-exports.update = async (req, res) => {
+export async function update(req, res) {
   try {
     const { id = "" } = req.params;
 
     if (!id) res.status(400).json({ message: "Error", status: 400 });
 
-    const data = await Name_.findByIdAndUpdate(id, req.body, { new: true });
+    const data = await _Name_.findByIdAndUpdate(id, req.body, { new: true });
     res.status(200).json({ message: "success", status: 200, data });
   } catch (error) {
     res.status(400).json({ message: "Error", status: 400, error });
   }
-};
+}
 
-exports.softDelete = async (req, res) => {
+export async function softDelete(req, res) {
   try {
     const { id = "" } = req.params;
 
     if (!id) res.status(400).json({ message: "Error", status: 400 });
 
-    const data = await Name_.findByIdAndUpdate(
+    const data = await _Name_.findByIdAndUpdate(
       id,
       { deletedAt: Date.now() },
       { new: true }
@@ -46,19 +46,19 @@ exports.softDelete = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: "Error", status: 400, error });
   }
-};
+}
 
-exports.details = async (req, res) => {
+export async function details(req, res) {
   try {
     const { id = "" } = req.params;
 
     if (!id) res.status(400).json({ message: "Error", status: 400 });
 
-    let data = await Name_.findById(id);
+    let data = await _Name_.findById(id);
 
     if (data) res.status(200).json({ message: "success", status: 200, data });
     else res.status(404).json({ message: "Not Found!", status: 404, data });
   } catch (error) {
     res.status(400).json({ message: "Error", status: 400, error });
   }
-};
+}
