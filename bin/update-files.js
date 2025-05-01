@@ -31,6 +31,10 @@ export function installDependencies(destinationPath, projectName) {
       description: "A simple express app",
     };
 
+    delete packageData.bugs;
+    delete packageData.homepage;
+    delete packageData.repository;
+
     // Write back to package.json
     writeFileSync(packageJsonPath, JSON.stringify(packageData, null, 2));
 
