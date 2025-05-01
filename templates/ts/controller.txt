@@ -1,0 +1,137 @@
+import { Request, Response } from "express";
+
+import _Name_ from "../models/_name_";
+import ResponseHelper from "../helpers/responseHelper";
+import { SOMETHING_WENT_WRONG } from "../lang/en/common";
+import {
+  _NAME__FOUND,
+  _NAME__CREATED,
+  _NAME__DELETED,
+  _NAME__UPDATED,
+  _NAME__NOT_FOUND,
+} from "../lang/en/_name_";
+
+export const list = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const _name_s: any[] = await _Name_.find();
+
+    if (_name_s.length === 0) {
+      return ResponseHelper.error({
+        res,
+        code: 404,
+        error: _NAME__NOT_FOUND,
+        message: _NAME__NOT_FOUND,
+      });
+    }
+
+    return ResponseHelper.success({
+      res,
+      data: _name_s,
+      message: _NAME__FOUND,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+  }
+};
+
+export const create = async (req: Request, res: Response): Promise<any> => {
+  console.log("CREATE", req.body);
+
+  try {
+    const _name_: any = await new _Name_(req.body).save();
+
+    return ResponseHelper.success({
+      res,
+      data: _name_,
+      message: _NAME__CREATED,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+  }
+};
+
+export const update = async (req: Request, res: Response): Promise<any> => {
+  try {
+    let _name_: any = await _Name_.findOneAndUpdate(
+      { _id: req.params.id, deletedAt: null },
+      { $set: req.body },
+      { new: true },
+    );
+
+    if (!_name_) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: _NAME__NOT_FOUND,
+      });
+    }
+
+    return ResponseHelper.success({
+      res,
+      data: _name_,
+      message: _NAME__UPDATED,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+  }
+};
+
+export const softDelete = async (req: Request, res: Response): Promise<any> => {
+  try {
+    let _name_: any = await _Name_.findOneAndUpdate(
+      { _id: req.params.id, deletedAt: null },
+      { $set: { deletedAt: new Date() } },
+      { new: true },
+    );
+
+    if (!_name_) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: _NAME__NOT_FOUND,
+      });
+    }
+
+    return ResponseHelper.success({
+      res,
+      data: _name_,
+      message: _NAME__DELETED,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+  }
+};
+
+export const details = async (req: Request, res: Response): Promise<any> => {
+  try {
+    let _name_: any = await _Name_.findOne({
+      _id: req.params.id,
+      deletedAt: null,
+    });
+
+    if (!_name_) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: _NAME__NOT_FOUND,
+      });
+    }
+
+    return ResponseHelper.success({
+      res,
+      message: _NAME__FOUND,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+  }
+};

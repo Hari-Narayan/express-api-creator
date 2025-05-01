@@ -1,0 +1,13 @@
+import mongoose from "mongoose";
+
+export interface I_Name_ {
+  _id: string;
+  _interface_
+  deletedAt?: Date;
+}
+
+const schema: mongoose.Schema = new mongoose.Schema(_schema_);
+
+const _Name_ = mongoose.model<I_Name_>("_Name_", schema);
+
+export default _Name_;
