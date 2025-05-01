@@ -1,7 +1,13 @@
 import { join } from "path";
 import { execSync } from "child_process";
 import { color } from "console-log-colors";
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import {
+  rmSync,
+  existsSync,
+  unlinkSync,
+  readFileSync,
+  writeFileSync,
+} from "fs";
 
 /**
  * ### Install Dependencies
@@ -18,6 +24,13 @@ export function installDependencies(destinationPath, projectName) {
       console.error("❌ package.json not found!");
       return;
     }
+
+    const gitIgnorePath = join(destinationPath, ".gitignore");
+    if (existsSync(gitIgnorePath)) unlinkSync(gitIgnorePath);
+
+    const gitFolderPath = join(destinationPath, ".git");
+    if (existsSync(gitFolderPath))
+      rmSync(gitFolderPath, { recursive: true, force: true });
 
     // Read package.json
     let packageData = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
@@ -61,7 +74,7 @@ export function installDependencies(destinationPath, projectName) {
       )
     );
   } catch (error) {
-    console.error("❌ Error installing dependencies:", error.message);
+    console.error("❌ Error installing dependencies:", error);
   }
 }
 
