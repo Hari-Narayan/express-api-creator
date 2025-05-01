@@ -1,7 +1,6 @@
 import { join } from "path";
 import { execSync } from "child_process";
 import { color } from "console-log-colors";
-import { default as inquirer } from "inquirer";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 
 /**
@@ -35,7 +34,7 @@ export function installDependencies(destinationPath, projectName) {
     // Write back to package.json
     writeFileSync(packageJsonPath, JSON.stringify(packageData, null, 2));
 
-    console.log(color.green("✔️  package.json updated successfully."));
+    console.log(color.green("✔️  package.json have been updated."));
     console.log(color.yellow("✔️  Installing dependencies..."));
 
     execSync("npm install", {
@@ -43,7 +42,7 @@ export function installDependencies(destinationPath, projectName) {
       stdio: "inherit",
     });
 
-    console.log(color.green("\n✔️  Dependencies installed successfully."));
+    console.log(color.green("\n✔️  Dependencies have been installed."));
 
     let data = readFileSync(join(destinationPath, "README.md"), "utf-8");
     data = data.replace(/express-JS/g, projectName);
@@ -78,22 +77,7 @@ export async function createEnvFile(destination, databaseName) {
     return;
   }
 
-  if (existsSync(envPath)) {
-    const { overwrite } = await inquirer.prompt([
-      {
-        default: false,
-        type: "confirm",
-        name: "overwrite",
-        message: `File ".env" already exists. Overwrite?`,
-      },
-    ]);
-
-    if (!overwrite) return;
-
-    updateEnvFile(envPath, envExamplePath, databaseName);
-  } else {
-    updateEnvFile(envPath, envExamplePath, databaseName);
-  }
+  updateEnvFile(envPath, envExamplePath, databaseName);
 }
 
 const updateEnvFile = (envPath, envExamplePath, databaseName) => {
@@ -101,5 +85,5 @@ const updateEnvFile = (envPath, envExamplePath, databaseName) => {
   currentEnvContent = currentEnvContent.replace("express-app", databaseName);
 
   writeFileSync(envPath, currentEnvContent, { encoding: "utf8" });
-  console.log(color.green("✔️  ENV file updated!"));
+  console.log(color.green("✔️  ENV file created!"));
 };
