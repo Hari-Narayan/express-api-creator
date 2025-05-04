@@ -28,7 +28,9 @@ export const createDynamicFiles = async (
     sampleRoute = sampleRoute.replaceAll("_name_", requestedCrud);
 
     if (!existsSync(routePath)) {
-      console.error(color.red("❌ No proper directory structure found."));
+      console.error(
+        color.red(`❌ No proper directory structure found. ${destinationPath}`)
+      );
       console.error(
         color.blue(
           "ℹ️  Run `npx express-api-creator create` to create the directory structure."

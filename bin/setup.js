@@ -6,7 +6,7 @@ import { existsSync } from "fs";
 import { color } from "console-log-colors";
 
 import cloneRepo from "./clone-project.js";
-import { CREATE, CREATE_MCR } from "./constant.js";
+import { CREATE, CREATE_MCR, PROJECT_NAME } from "./constant.js";
 import { createEnvFile, installDependencies } from "./update-files.js";
 import { createDynamicFiles, createDynamicFilesTS } from "./module-creator.js";
 
@@ -18,9 +18,9 @@ import { createDynamicFiles, createDynamicFilesTS } from "./module-creator.js";
     let moduleName = "";
     let template = "JS";
     let commandType = "";
+    let projectName = "";
     let fields = ["name"];
     let args = process.argv;
-    let projectName = "my-app";
     let destinationPath = process.cwd();
     let repoUrl = "https://github.com/Hari-Narayan/express-JS.git";
 
@@ -40,7 +40,9 @@ import { createDynamicFiles, createDynamicFilesTS } from "./module-creator.js";
 
     if (moduleName && !commandType && commandType !== CREATE) {
       commandType = CREATE_MCR;
-      destinationPath = join(destinationPath, projectName);
+
+      if (destinationPath.includes(PROJECT_NAME))
+        destinationPath = join(destinationPath, "my-app");
     }
 
     if (commandType === CREATE) {
