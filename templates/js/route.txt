@@ -1,6 +1,12 @@
 import { Router } from "express";
 
-import { list, create, update, details, softDelete } from "../controllers/_name_Controller.js";
+import {
+  list,
+  create,
+  update,
+  details,
+  softDelete,
+} from "../controllers/_name_Controller.js";
 
 const _name_Router = Router();
 

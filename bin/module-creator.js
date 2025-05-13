@@ -52,17 +52,19 @@ export const createDynamicFiles = async (
             "❌ Error: Root route file does not contains route definitions comments."
           )
         );
+
         return;
       }
 
       const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.js";`;
-      const fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
+      const fileRequire = `rootRouter.use("/${requestedCrud}", auth, ${requestedCrud}Route);`;
 
       // Insert Router require
-      if (!data.includes(fileRequire))
+      if (!data.includes(fileRequire)) {
         data = data
           .replace(importRoutes, `${importFile}\n\n${importRoutes}`)
           .replace(defineRoutes, `${fileRequire}\n\n${defineRoutes}`);
+      }
 
       writeFileSync(rootRoutePath, data, "utf-8");
       console.log(color.green("✔️  File updated successfully!"));
@@ -156,16 +158,29 @@ export const createDynamicFilesTS = async (
     try {
       let rootRoutePath = join(destinationPath, `/src/routes/index.ts`); // Replace with actual file
       let data = readFileSync(rootRoutePath, "utf-8");
-      const insertBefore = `export default rootRouter;`;
-      const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.ts";`;
-      const fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
+
+      const defineRoutes = `// Define the routes`;
+      const importRoutes = `// Importing the routers`;
+
+      if (!data.includes(defineRoutes) || !data.includes(importRoutes)) {
+        console.error(
+          color.red(
+            "❌ Error: Root route file does not contains route definitions comments."
+          )
+        );
+
+        return;
+      }
+
+      const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route";`;
+      const fileRequire = `rootRouter.use("/${requestedCrud}", auth, ${requestedCrud}Route);`;
 
       // Insert Router require
-      if (!data.includes(fileRequire))
-        data = data.replace(
-          insertBefore,
-          `\n${importFile}\n${fileRequire}\n\n${insertBefore}`
-        );
+      if (!data.includes(fileRequire)) {
+        data = data
+          .replace(importRoutes, `${importFile}\n${importRoutes}`)
+          .replace(defineRoutes, `${fileRequire}\n${defineRoutes}`);
+      }
 
       writeFileSync(rootRoutePath, data, "utf-8");
       console.log("✔️  File updated successfully!");
@@ -182,8 +197,9 @@ export const createDynamicFilesTS = async (
     let sampleLang = readFileSync(dynamicLangPath, "utf-8");
     sampleLang = sampleLang
       .replaceAll("_name_", requestedCrud)
-      .replaceAll("_Name_", requestedCrudTitleCase);
-    let langPath = join(destinationPath, `/src/langs/${requestedCrud}.ts`);
+      .replaceAll("_Name_", requestedCrudTitleCase)
+      .replaceAll("_NAME_", requestedCrud.toUpperCase());
+    let langPath = join(destinationPath, `/src/lang/en/${requestedCrud}.ts`);
 
     writeFileSync(langPath, sampleLang, { encoding: "utf8" });
     console.log("✔️  Lang file created!");
@@ -192,7 +208,8 @@ export const createDynamicFilesTS = async (
     let sampleController = readFileSync(dynamicControllerPath, "utf-8");
     sampleController = sampleController
       .replaceAll("_name_", requestedCrud)
-      .replaceAll("_Name_", requestedCrudTitleCase);
+      .replaceAll("_Name_", requestedCrudTitleCase)
+      .replaceAll("_NAME_", requestedCrud.toUpperCase());
     let controllerPath = join(
       destinationPath,
       `/src/controllers/${requestedCrud}Controller.ts`
