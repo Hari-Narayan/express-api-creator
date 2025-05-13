@@ -3,7 +3,7 @@ import { dirname, join } from "path";
 import { color } from "console-log-colors";
 import { readFileSync, existsSync, writeFileSync } from "fs";
 
-import { capitalizeFirstChar } from "./helpers.js";
+import { toCapitalizeFirstChar } from "./helpers.js";
 
 export const createDynamicFiles = async (
   fields,
@@ -12,7 +12,7 @@ export const createDynamicFiles = async (
 ) => {
   let schema = "";
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  let requestedCrudTitleCase = capitalizeFirstChar(requestedCrud);
+  let requestedCrudTitleCase = toCapitalizeFirstChar(requestedCrud);
 
   if (requestedCrud) {
     let dynamicRoutePath = join(__dirname, "../templates/js/route.txt");
@@ -39,6 +39,38 @@ export const createDynamicFiles = async (
       return;
     }
 
+    try {
+      let rootRoutePath = join(destinationPath, `/src/routes/index.js`); // Replace with actual file
+      let data = readFileSync(rootRoutePath, "utf-8");
+
+      const defineRoutes = `// Define the routes`;
+      const importRoutes = `// Importing the routers`;
+
+      if (!data.includes(defineRoutes) || !data.includes(importRoutes)) {
+        console.error(
+          color.red(
+            "❌ Error: Root route file does not contains route definitions comments."
+          )
+        );
+        return;
+      }
+
+      const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.js";`;
+      const fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
+
+      // Insert Router require
+      if (!data.includes(fileRequire))
+        data = data
+          .replace(importRoutes, `${importFile}\n\n${importRoutes}`)
+          .replace(defineRoutes, `${fileRequire}\n\n${defineRoutes}`);
+
+      writeFileSync(rootRoutePath, data, "utf-8");
+      console.log(color.green("✔️  File updated successfully!"));
+    } catch (err) {
+      console.error(color.red("❌ Error processing file: "), err);
+    }
+
+    // Fetching route data & update
     routePath = join(routePath, `${requestedCrud}Route.js`);
 
     writeFileSync(routePath, sampleRoute, { encoding: "utf8" });
@@ -85,29 +117,6 @@ export const createDynamicFiles = async (
 
     writeFileSync(modelPath, sampleModel, { encoding: "utf8" });
     console.log(color.green("✔️  Model file created!"));
-
-    let rootRoutePath = join(destinationPath, `/src/routes/index.js`); // Replace with actual file
-
-    try {
-      let data = readFileSync(rootRoutePath, "utf-8");
-
-      const insertBefore = `export default rootRouter;`;
-
-      const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.js";`;
-      const fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
-
-      // Insert Router require
-      if (!data.includes(fileRequire))
-        data = data.replace(
-          insertBefore,
-          `\n${importFile}\n${fileRequire}\n\n${insertBefore}`
-        );
-
-      writeFileSync(rootRoutePath, data, "utf-8");
-      console.log(color.green("✔️  File updated successfully!"));
-    } catch (err) {
-      console.error(color.red("❌ Error processing file: "), err);
-    }
   }
 };
 
@@ -118,7 +127,7 @@ export const createDynamicFilesTS = async (
 ) => {
   let schema = "";
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  let requestedCrudTitleCase = capitalizeFirstChar(requestedCrud);
+  let requestedCrudTitleCase = toCapitalizeFirstChar(requestedCrud);
 
   if (requestedCrud) {
     let dynamicLangPath = join(__dirname, "../templates/ts/lang.txt");
@@ -142,6 +151,26 @@ export const createDynamicFilesTS = async (
         )
       );
       return;
+    }
+
+    try {
+      let rootRoutePath = join(destinationPath, `/src/routes/index.ts`); // Replace with actual file
+      let data = readFileSync(rootRoutePath, "utf-8");
+      const insertBefore = `export default rootRouter;`;
+      const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.ts";`;
+      const fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
+
+      // Insert Router require
+      if (!data.includes(fileRequire))
+        data = data.replace(
+          insertBefore,
+          `\n${importFile}\n${fileRequire}\n\n${insertBefore}`
+        );
+
+      writeFileSync(rootRoutePath, data, "utf-8");
+      console.log("✔️  File updated successfully!");
+    } catch (err) {
+      console.error(color.red("❌ Error processing file: "), err);
     }
 
     routePath = join(routePath, `${requestedCrud}Route.ts`);
@@ -200,26 +229,5 @@ export const createDynamicFilesTS = async (
 
     writeFileSync(modelPath, sampleModel, { encoding: "utf8" });
     console.log("✔️  Model file created!");
-
-    let rootRoutePath = join(destinationPath, `/src/routes/index.ts`); // Replace with actual file
-
-    try {
-      let data = readFileSync(rootRoutePath, "utf-8");
-      const insertBefore = `export default rootRouter;`;
-      const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.ts";`;
-      const fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
-
-      // Insert Router require
-      if (!data.includes(fileRequire))
-        data = data.replace(
-          insertBefore,
-          `\n${importFile}\n${fileRequire}\n\n${insertBefore}`
-        );
-
-      writeFileSync(rootRoutePath, data, "utf-8");
-      console.log("✔️  File updated successfully!");
-    } catch (err) {
-      console.error(color.red("❌ Error processing file: "), err);
-    }
   }
 };

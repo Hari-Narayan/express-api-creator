@@ -1,20 +1,43 @@
 import _Name_ from "../models/_name_.js";
+import ResponseHelper from "../helpers/responseHelper.js";
 
 export async function list(req, res) {
   try {
     const data = await _Name_.find();
-    res.status(200).json({ message: "success", status: 200, data });
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error", status: 400, error });
+    return ResponseHelper.error({
+      res,
+      error,
+      code: 400,
+      message: "Error",
+    });
   }
 }
 
 export async function create(req, res) {
   try {
     const data = await new _Name_(req.body).save();
-    res.status(200).json({ message: "success", status: 200, data });
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error", status: 400, error });
+    return ResponseHelper.error({
+      res,
+      error,
+      code: 400,
+      message: "Error",
+    });
   }
 }
 
@@ -22,12 +45,29 @@ export async function update(req, res) {
   try {
     const { id = "" } = req.params;
 
-    if (!id) res.status(400).json({ message: "Error", status: 400 });
+    if (!id) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: "Error",
+      });
+    }
 
     const data = await _Name_.findByIdAndUpdate(id, req.body, { new: true });
-    res.status(200).json({ message: "success", status: 200, data });
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error", status: 400, error });
+    return ResponseHelper.error({
+      res,
+      error,
+      code: 400,
+      message: "Error",
+    });
   }
 }
 
@@ -35,16 +75,33 @@ export async function softDelete(req, res) {
   try {
     const { id = "" } = req.params;
 
-    if (!id) res.status(400).json({ message: "Error", status: 400 });
+    if (!id) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: "Error",
+      });
+    }
 
     const data = await _Name_.findByIdAndUpdate(
       id,
       { deletedAt: Date.now() },
       { new: true }
     );
-    res.status(200).json({ message: "success", status: 200, data });
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error", status: 400, error });
+    return ResponseHelper.error({
+      res,
+      error,
+      code: 400,
+      message: "Error",
+    });
   }
 }
 
@@ -52,13 +109,37 @@ export async function details(req, res) {
   try {
     const { id = "" } = req.params;
 
-    if (!id) res.status(400).json({ message: "Error", status: 400 });
+    if (!id) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: "Error",
+      });
+    }
 
     let data = await _Name_.findById(id);
 
-    if (data) res.status(200).json({ message: "success", status: 200, data });
-    else res.status(404).json({ message: "Not Found!", status: 404, data });
+    if (data) {
+      return ResponseHelper.success({
+        res,
+        data,
+        code: 200,
+        message: "success",
+      });
+    } else {
+      return ResponseHelper.error({
+        res,
+        data,
+        code: 404,
+        message: "Not Found!",
+      });
+    }
   } catch (error) {
-    res.status(400).json({ message: "Error", status: 400, error });
+    return ResponseHelper.error({
+      res,
+      error,
+      code: 400,
+      message: "Error",
+    });
   }
 }
