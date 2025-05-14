@@ -5,6 +5,15 @@ import { readFileSync, existsSync, writeFileSync } from "fs";
 
 import { toCapitalizeFirstChar } from "./helpers.js";
 
+/**
+ * ### Create Dynamic Files for JavaScript
+ * @description - This function creates dynamic files for a requested CRUD operation in JavaScript.
+ *
+ * @param {*} fields - Array of strings representing field names
+ * @param {*} requestedCrud - Model name
+ * @param {*} destinationPath - Path to the destination directory
+ * @returns - Promise<void>
+ */
 export const createDynamicFiles = async (
   fields,
   requestedCrud,
@@ -122,6 +131,15 @@ export const createDynamicFiles = async (
   }
 };
 
+/**
+ * ### Create Dynamic Files for TypeScript
+ * @description - This function creates dynamic files for a requested CRUD operation in TypeScript.
+ *
+ * @param {*} fields - Array of strings representing field names
+ * @param {*} requestedCrud - Model name
+ * @param {*} destinationPath - Path to the destination directory
+ * @returns - Promise<void>
+ */
 export const createDynamicFilesTS = async (
   fields,
   requestedCrud,
@@ -219,17 +237,20 @@ export const createDynamicFilesTS = async (
     console.log("✔️  Controller file created!");
 
     // Fetching Model data & update
+    let interfaceSchema = "";
+    const interfaceString = `\n  _field: String;`;
     const schemaString = `\n  _field: { type: String, required: true },`;
 
     if (requestedCrud && fields.length === 0) {
       schema = `{
         name: { type: String, required: true },
-      }`;
+        }`;
     } else {
       schema = "{";
 
       fields.forEach((field) => {
         schema += schemaString.replace("_field", field);
+        interfaceSchema += interfaceString.replace("_field", field);
       });
 
       schema += "\n}";
@@ -238,9 +259,10 @@ export const createDynamicFilesTS = async (
     let sampleModel = readFileSync(dynamicModelPath, "utf-8");
 
     sampleModel = sampleModel
+      .replaceAll("_schema_", schema)
       .replaceAll("_name_", requestedCrud)
-      .replaceAll("_Name_", requestedCrudTitleCase)
-      .replaceAll("_schema_", schema);
+      .replaceAll("_interface_", interfaceSchema)
+      .replaceAll("_Name_", requestedCrudTitleCase);
 
     const modelPath = join(destinationPath, `/src/models/${requestedCrud}.ts`);
 

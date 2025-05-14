@@ -41,8 +41,6 @@ import {
       const answers = await createProjectQuestions();
       const { proceed } = await confirmBeforeProceed();
 
-      console.log({ proceed, answers });
-
       if (!proceed) return;
 
       const { projectName, language } = answers;
@@ -81,8 +79,6 @@ import {
       const { proceed } = await confirmBeforeProceed();
 
       if (!proceed) return;
-
-      console.log({ proceed });
 
       switch (language) {
         case JAVASCRIPT:
