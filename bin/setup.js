@@ -27,7 +27,8 @@ import {
 (async () => {
   try {
     let commandType = "";
-    let destinationPath = process.cwd();
+    const processPath = process.cwd();
+    let destinationPath = processPath;
 
     process.argv.slice(2).forEach((arg) => {
       if (arg.toUpperCase() === CREATE) commandType = CREATE;
@@ -45,6 +46,7 @@ import {
 
       const { projectName, language } = answers;
       const { repoUrl } = TEMPLATES[language];
+      destinationPath = join(processPath, projectName);
 
       if (existsSync(destinationPath)) {
         console.error(
