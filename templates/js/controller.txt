@@ -12,12 +12,7 @@ export async function list(req, res) {
       message: "success",
     });
   } catch (error) {
-    return ResponseHelper.error({
-      res,
-      error,
-      code: 400,
-      message: "Error",
-    });
+    return ResponseHelper.error({ res, error });
   }
 }
 
@@ -32,12 +27,7 @@ export async function create(req, res) {
       message: "success",
     });
   } catch (error) {
-    return ResponseHelper.error({
-      res,
-      error,
-      code: 400,
-      message: "Error",
-    });
+    return ResponseHelper.error({ res, error });
   }
 }
 
@@ -62,12 +52,7 @@ export async function update(req, res) {
       message: "success",
     });
   } catch (error) {
-    return ResponseHelper.error({
-      res,
-      error,
-      code: 400,
-      message: "Error",
-    });
+    return ResponseHelper.error({ res, error });
   }
 }
 
@@ -96,12 +81,7 @@ export async function softDelete(req, res) {
       message: "success",
     });
   } catch (error) {
-    return ResponseHelper.error({
-      res,
-      error,
-      code: 400,
-      message: "Error",
-    });
+    return ResponseHelper.error({ res, error });
   }
 }
 
@@ -135,11 +115,6 @@ export async function details(req, res) {
       });
     }
   } catch (error) {
-    return ResponseHelper.error({
-      res,
-      error,
-      code: 400,
-      message: "Error",
-    });
+    return ResponseHelper.error({ res, error });
   }
 }

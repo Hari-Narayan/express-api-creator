@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 
 import _Name_ from "../models/_name_";
 import ResponseHelper from "../helpers/responseHelper";
-import { SOMETHING_WENT_WRONG } from "../lang/en/common";
 import {
   _NAME__FOUND,
   _NAME__CREATED,
@@ -30,9 +29,7 @@ export const list = async (req: Request, res: Response): Promise<any> => {
       message: _NAME__FOUND,
     });
   } catch (error) {
-    console.error(error);
-
-    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+    return ResponseHelper.error({ res, error });
   }
 };
 
@@ -48,9 +45,7 @@ export const create = async (req: Request, res: Response): Promise<any> => {
       message: _NAME__CREATED,
     });
   } catch (error) {
-    console.error(error);
-
-    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+    return ResponseHelper.error({ res, error });
   }
 };
 
@@ -76,9 +71,7 @@ export const update = async (req: Request, res: Response): Promise<any> => {
       message: _NAME__UPDATED,
     });
   } catch (error) {
-    console.error(error);
-
-    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+    return ResponseHelper.error({ res, error });
   }
 };
 
@@ -104,9 +97,7 @@ export const softDelete = async (req: Request, res: Response): Promise<any> => {
       message: _NAME__DELETED,
     });
   } catch (error) {
-    console.error(error);
-
-    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+    return ResponseHelper.error({ res, error });
   }
 };
 
@@ -130,8 +121,6 @@ export const details = async (req: Request, res: Response): Promise<any> => {
       message: _NAME__FOUND,
     });
   } catch (error) {
-    console.error(error);
-
-    return ResponseHelper.error({ res, error, message: SOMETHING_WENT_WRONG });
+    return ResponseHelper.error({ res, error });
   }
 };
