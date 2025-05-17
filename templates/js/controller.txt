@@ -1,0 +1,120 @@
+import _Name_ from "../models/_name_.js";
+import ResponseHelper from "../helpers/responseHelper.js";
+
+export async function list(req, res) {
+  try {
+    const data = await _Name_.find();
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
+  } catch (error) {
+    return ResponseHelper.error({ res, error });
+  }
+}
+
+export async function create(req, res) {
+  try {
+    const data = await new _Name_(req.body).save();
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
+  } catch (error) {
+    return ResponseHelper.error({ res, error });
+  }
+}
+
+export async function update(req, res) {
+  try {
+    const { id = "" } = req.params;
+
+    if (!id) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: "Error",
+      });
+    }
+
+    const data = await _Name_.findByIdAndUpdate(id, req.body, { new: true });
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
+  } catch (error) {
+    return ResponseHelper.error({ res, error });
+  }
+}
+
+export async function softDelete(req, res) {
+  try {
+    const { id = "" } = req.params;
+
+    if (!id) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: "Error",
+      });
+    }
+
+    const data = await _Name_.findByIdAndUpdate(
+      id,
+      { deletedAt: Date.now() },
+      { new: true }
+    );
+
+    return ResponseHelper.success({
+      res,
+      data,
+      code: 200,
+      message: "success",
+    });
+  } catch (error) {
+    return ResponseHelper.error({ res, error });
+  }
+}
+
+export async function details(req, res) {
+  try {
+    const { id = "" } = req.params;
+
+    if (!id) {
+      return ResponseHelper.error({
+        res,
+        code: 400,
+        message: "Error",
+      });
+    }
+
+    let data = await _Name_.findById(id);
+
+    if (data) {
+      return ResponseHelper.success({
+        res,
+        data,
+        code: 200,
+        message: "success",
+      });
+    } else {
+      return ResponseHelper.error({
+        res,
+        data,
+        code: 404,
+        message: "Not Found!",
+      });
+    }
+  } catch (error) {
+    return ResponseHelper.error({ res, error });
+  }
+}

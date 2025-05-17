@@ -137,5 +137,8 @@ dist
 
 package-lock.json
 
+test.js
+
 structure
 old
+my-app

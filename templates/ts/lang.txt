@@ -1,0 +1,5 @@
+export const _NAME__NOT_FOUND = "_Name_ not found!";
+export const _NAME__FOUND = "_Name_ found successfully.";
+export const _NAME__CREATED = "_Name_ created successfully.";
+export const _NAME__UPDATED = "_Name_ updated successfully.";
+export const _NAME__DELETED = "_Name_ deleted successfully.";

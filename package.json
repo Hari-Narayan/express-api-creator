@@ -1,18 +1,15 @@
 {
   "name": "express-api-creator",
-  "version": "0.1.0",
-  "description": "Scaffold an Express.js boilerplate project. You can generate express.js boilerplate code with a single command.",
+  "version": "0.1.14",
   "main": "index.js",
   "type": "module",
+  "description": "Scaffold an Express.js boilerplate project. You can generate express.js boilerplate code with a single command.",
   "bin": {
     "express-api-creator": "./bin/setup.js"
   },
   "scripts": {
-    "start": "node server",
-    "dev": "node --watch structure/server",
-    "express-js": "nodemon templates/express-js/server",
-    "create": "node bin/setup create template=js",
-    "mcr": "node bin/setup mcr=book:name,images,stock,description,price"
+    "mcr": "node bin/setup mcr",
+    "create": "node bin/setup create"
   },
   "keywords": [
     "cli",
@@ -31,18 +28,8 @@
   "author": "Hari Narayan",
   "license": "MIT",
   "dependencies": {
-    "bcryptjs": "^3.0.2",
     "console-log-colors": "^0.5.0",
-    "dotenv": "^16.5.0",
-    "dotenv-expand": "^12.0.2",
-    "express": "^4.21.2",
     "inquirer": "^12.5.2",
-    "jsonwebtoken": "^9.0.2",
-    "moment": "^2.30.1",
-    "mongoose": "^8.14.0",
-    "nodemailer": "^6.10.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
+    "simple-git": "^3.27.0"
   }
 }

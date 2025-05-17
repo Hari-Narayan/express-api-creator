@@ -1,13 +1,19 @@
 import { Router } from "express";
 
-import { list, create, update, details, softDelete } from "../controllers/_name_Controller.js";
+import {
+  list,
+  create,
+  update,
+  details,
+  softDelete,
+} from "../controllers/_name_Controller";
 
 const _name_Router = Router();
 
 _name_Router.get("/list", list);
 _name_Router.post("/create", create);
-_name_Router.get("/detail/:id", details);
 _name_Router.post("/update/:id", update);
-_name_Router.delete("/delete/:id", softDelete);
+_name_Router.post("/details/:id", details);
+_name_Router.post("/delete/:id", softDelete);
 
 export default _name_Router;
