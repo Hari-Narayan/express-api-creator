@@ -62,7 +62,8 @@ import {
       await createEnvFile(destinationPath, projectName);
       installDependencies(destinationPath, projectName);
     } else if (commandType === MCR) {
-      const { fields, modelName, language } = await createModuleQuestions();
+      const { fields, modelName, language, isProtected } =
+        await createModuleQuestions();
       let showFields = [];
 
       fields.forEach((field) => {
@@ -84,10 +85,20 @@ import {
 
       switch (language) {
         case JAVASCRIPT:
-          await createDynamicFiles(fields, modelName, destinationPath);
+          await createDynamicFiles(
+            fields,
+            modelName,
+            destinationPath,
+            isProtected
+          );
           break;
         case TYPESCRIPT:
-          await createDynamicFilesTS(fields, modelName, destinationPath);
+          await createDynamicFilesTS(
+            fields,
+            modelName,
+            destinationPath,
+            isProtected
+          );
           break;
         default:
           break;

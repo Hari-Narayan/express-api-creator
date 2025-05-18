@@ -27,7 +27,7 @@ export const createProjectQuestions = async () => {
       name: "language",
       default: TYPESCRIPT,
       message: "Choose language?",
-      choices: [JAVASCRIPT, TYPESCRIPT],
+      choices: [TYPESCRIPT, JAVASCRIPT],
     },
   ];
 
@@ -46,7 +46,7 @@ export const createModuleQuestions = async () => {
       name: "language",
       default: TYPESCRIPT,
       message: "Choose language?",
-      choices: [JAVASCRIPT, TYPESCRIPT],
+      choices: [TYPESCRIPT, JAVASCRIPT],
     },
     {
       type: "input",
@@ -74,6 +74,13 @@ export const createModuleQuestions = async () => {
           .map((item) => item.trim())
           .filter((item) => item !== "");
       },
+    },
+    {
+      default: true,
+      type: "confirm",
+      name: "isProtected",
+      message: ({ modelName }) =>
+        `Do you want to protect ${modelName} routes with AUTH?`,
     },
   ];
 

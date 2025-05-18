@@ -12,12 +12,14 @@ import { toCapitalizeFirstChar } from "./helpers.js";
  * @param {*} fields - Array of strings representing field names
  * @param {*} requestedCrud - Model name
  * @param {*} destinationPath - Path to the destination directory
+ * @param {*} isProtected - Auth middleware will be apply
  * @returns - Promise<void>
  */
 export const createDynamicFiles = async (
   fields,
   requestedCrud,
-  destinationPath
+  destinationPath,
+  isProtected
 ) => {
   let schema = "";
   const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -52,8 +54,8 @@ export const createDynamicFiles = async (
       let rootRoutePath = join(destinationPath, `/src/routes/index.js`); // Replace with actual file
       let data = readFileSync(rootRoutePath, "utf-8");
 
-      const defineRoutes = `// Define the routes`;
-      const importRoutes = `// Importing the routers`;
+      const defineRoutes = `/* ====== Define routes end ===== */`;
+      const importRoutes = `/* ====== Import routes end ===== */`;
 
       if (!data.includes(defineRoutes) || !data.includes(importRoutes)) {
         console.error(
@@ -66,7 +68,10 @@ export const createDynamicFiles = async (
       }
 
       const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route.js";`;
-      const fileRequire = `rootRouter.use("/${requestedCrud}", auth, ${requestedCrud}Route);`;
+      let fileRequire = `rootRouter.use("/${requestedCrud}", auth, ${requestedCrud}Route);`;
+
+      if (!isProtected)
+        fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
 
       // Insert Router require
       if (!data.includes(fileRequire)) {
@@ -138,12 +143,14 @@ export const createDynamicFiles = async (
  * @param {*} fields - Array of strings representing field names
  * @param {*} requestedCrud - Model name
  * @param {*} destinationPath - Path to the destination directory
+ * @param {*} isProtected - Auth middleware will be apply
  * @returns - Promise<void>
  */
 export const createDynamicFilesTS = async (
   fields,
   requestedCrud,
-  destinationPath
+  destinationPath,
+  isProtected
 ) => {
   let schema = "";
   const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -177,8 +184,8 @@ export const createDynamicFilesTS = async (
       let rootRoutePath = join(destinationPath, `/src/routes/index.ts`); // Replace with actual file
       let data = readFileSync(rootRoutePath, "utf-8");
 
-      const defineRoutes = `// Define the routes`;
-      const importRoutes = `// Importing the routers`;
+      const defineRoutes = `/* ====== Define routes end ===== */`;
+      const importRoutes = `/* ====== Import routes end ===== */`;
 
       if (!data.includes(defineRoutes) || !data.includes(importRoutes)) {
         console.error(
@@ -191,7 +198,10 @@ export const createDynamicFilesTS = async (
       }
 
       const importFile = `import ${requestedCrud}Route from "./${requestedCrud}Route";`;
-      const fileRequire = `rootRouter.use("/${requestedCrud}", auth, ${requestedCrud}Route);`;
+      let fileRequire = `rootRouter.use("/${requestedCrud}", auth, ${requestedCrud}Route);`;
+
+      if (!isProtected)
+        fileRequire = `rootRouter.use("/${requestedCrud}", ${requestedCrud}Route);`;
 
       // Insert Router require
       if (!data.includes(fileRequire)) {
